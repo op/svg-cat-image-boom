@@ -1,70 +1,34 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
-import React from 'react';
+import React, {Fragment, useState} from 'react';
 import {
+  Button,
   SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
-  Text,
   StatusBar,
 } from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import Svg, {
+  Image,
+  Defs,
+  Path,
+  G,
+  ClipPath,
+  Rect,
+  Circle,
+} from 'react-native-svg';
+
+const randomInts = () =>
+  new Array(10).fill(null).map(() => Math.floor(Math.random() * 640));
 
 const App: () => React$Node = () => {
   return (
     <>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
+        <ScrollView contentInsetAdjustmentBehavior="automatic">
           <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
+            <Images />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -72,42 +36,73 @@ const App: () => React$Node = () => {
   );
 };
 
+const Images = () => {
+  const [nums, setNums] = useState([]);
+
+  return (
+    <>
+      <Button title="Reload" onPress={() => setNums(randomInts())} />
+      <View style={styles.images}>
+        {nums.map((random, index) => (
+          <Fragment key={index}>
+            <View>
+              <ProfileImage
+                source={{uri: `http://placekitten.com/g/${random}`}}
+              />
+            </View>
+          </Fragment>
+        ))}
+      </View>
+    </>
+  );
+};
+
+const ProfileImage = ({source}) => (
+  <Svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 26 26"
+    version={1.1}
+    xmlnsXlink="http://www.w3.org/1999/xlink"
+    style={styles.profileImage}>
+    <Defs>
+      <ClipPath id="clip">
+        <Circle cx={13} cy={13} r={13} />
+      </ClipPath>
+    </Defs>
+    <G clipPath="url(#clip)">
+      <Rect x={0} y={0} width={26} height={26} fill="gray" />
+      {source ? (
+        <Image
+          clipPath="url(#clip)"
+          x={0}
+          y={0}
+          width={26}
+          height={26}
+          preserveAspectRatio="xMidYMid slice"
+          href={source}
+        />
+      ) : (
+        <Path
+          d="M1.112 27.5h25.776a10.396 10.396 0 0 0-10.255-8.692h-5.266c-5.109 0-9.43 3.705-10.255 8.692zm13.426-11.846a7.577 7.577 0 1 0 0-15.154 7.577 7.577 0 0 0 0 15.154z"
+          fill="#fff"
+          fillRule="evenodd"
+          x={-1.5}
+          y={2}
+        />
+      )}
+    </G>
+  </Svg>
+);
+
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  images: {
+    flex: 0,
+    height: 24,
+    flexDirection: 'row',
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
+  profileImage: {
+    aspectRatio: 1,
   },
 });
 
