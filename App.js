@@ -1,96 +1,59 @@
-import React, {Fragment, useState} from 'react';
-import {
-  Button,
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  StatusBar,
-} from 'react-native';
+import React, {useState} from 'react';
+import {Button, StyleSheet, ScrollView, View} from 'react-native';
 
-import Svg, {
-  Image,
-  Defs,
-  Path,
-  G,
-  ClipPath,
-  Rect,
-  Circle,
-} from 'react-native-svg';
+import Svg, {Image, Defs, G, ClipPath, Circle} from 'react-native-svg';
 
 const randomInts = () =>
-  new Array(10).fill(null).map(() => Math.floor(Math.random() * 640));
+  new Array(5).fill(null).map(() => Math.floor(Math.random() * 640));
+
+// use random cat images to add random network latency
+const getCatImages = () =>
+  randomInts().map(random => `http://placekitten.com/g/${random}`);
 
 const App: () => React$Node = () => {
   return (
     <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView contentInsetAdjustmentBehavior="automatic">
-          <View style={styles.body}>
-            <Images />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
+        <View>
+          <Images />
+        </View>
+      </ScrollView>
     </>
   );
 };
 
 const Images = () => {
-  const [nums, setNums] = useState([]);
+  const [images, setImages] = useState(getCatImages());
 
   return (
     <>
-      <Button title="Reload" onPress={() => setNums(randomInts())} />
+      <Button title="Reload" onPress={() => setImages(getCatImages())} />
       <View style={styles.images}>
-        {nums.map((random, index) => (
-          <Fragment key={index}>
-            <View>
-              <ProfileImage
-                source={{uri: `http://placekitten.com/g/${random}`}}
-              />
-            </View>
-          </Fragment>
+        {images.map((href, index) => (
+          <View key={index}>
+            <RoundImage href={href} />
+          </View>
         ))}
       </View>
     </>
   );
 };
 
-const ProfileImage = ({source}) => (
+const RoundImage = ({href}) => (
   <Svg
     width="100%"
     height="100%"
-    viewBox="0 0 26 26"
+    viewBox="0 0 64 64"
     version={1.1}
     xmlnsXlink="http://www.w3.org/1999/xlink"
     style={styles.profileImage}>
     <Defs>
       <ClipPath id="clip">
-        <Circle cx={13} cy={13} r={13} />
+        <Circle cx={32} cy={32} r={32} />
       </ClipPath>
     </Defs>
     <G clipPath="url(#clip)">
-      <Rect x={0} y={0} width={26} height={26} fill="gray" />
-      {source ? (
-        <Image
-          clipPath="url(#clip)"
-          x={0}
-          y={0}
-          width={26}
-          height={26}
-          preserveAspectRatio="xMidYMid slice"
-          href={source}
-        />
-      ) : (
-        <Path
-          d="M1.112 27.5h25.776a10.396 10.396 0 0 0-10.255-8.692h-5.266c-5.109 0-9.43 3.705-10.255 8.692zm13.426-11.846a7.577 7.577 0 1 0 0-15.154 7.577 7.577 0 0 0 0 15.154z"
-          fill="#fff"
-          fillRule="evenodd"
-          x={-1.5}
-          y={2}
-        />
-      )}
+      <Image clipPath="url(#clip)" width={64} height={64} href={href} />
     </G>
   </Svg>
 );
@@ -98,7 +61,7 @@ const ProfileImage = ({source}) => (
 const styles = StyleSheet.create({
   images: {
     flex: 0,
-    height: 24,
+    height: 64,
     flexDirection: 'row',
   },
   profileImage: {
